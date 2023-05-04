@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define LIMIT 0
+#define LIMIT 100
 typedef struct node{
 	int data;
 	struct node* left;
@@ -138,8 +138,7 @@ BT insertBT(Bnode *tree, int x)
 {
     Bnode* temp = NULL;
     int value  = rand()%100;
-    //printf("\n%d\n",value);
-    //printf("here");
+    
     if(tree == NULL){
         temp = (Bnode*)malloc(sizeof(Bnode));
         temp->data = x;
@@ -162,31 +161,31 @@ BT insertBT(Bnode *tree, int x)
 
 int comparisonBT(BT tree, int key, int *count, int * flag){
     	(*count)++;
-    	int comparisons=0;
-    	// int flag = 0;
-    	
+    	//int comparisons=0;
+    
     	if(!tree){
-        	return 0;
+        	return 1;
     	}
     
     	else{
         	if(tree->data == key){
         		*flag = 1;
-            		comparisons++;
+            		*count=*count+1;
             		return 0;
         	}
         
         	if(*flag == 0 && tree->data > key){
-            		comparisonBT(tree->left, key, count,flag);
-            		comparisons++;
+            		*count=*count+1;
+            		return *count + comparisonBT(tree->left, key, count,flag);
+            		//comparisons++;
         	}
         
         	else if(*flag == 0 && tree->right != NULL){
-            		comparisonBT(tree->right, key,count,flag);
-            		comparisons++;
+        		*count=*count+1;
+            		return *count + comparisonBT(tree->right, key,count,flag)+1;
         	}
     	}
-    return comparisons;
+    //return comparisons;
     
 }
 
@@ -203,7 +202,7 @@ void display_inorder_BT(BT tree){
 }
 
 
-int main(){
+int main(int* argc , int* argv()){
 	BST tree1;
 	initBST(&tree1);
 	
@@ -212,28 +211,36 @@ int main(){
 	
     	for(int i=0; i< LIMIT; i++){
         	int nodes = rand() % 100;
-        	//tree1 = 
+        	//printf("%d\t",nodes); 
         	insert_BST(&tree1,nodes);
-        	//tree2 =
         	tree2 = insertBT(tree2,nodes);
     	}
-    
-    	//printf("\nBST inorder : ");
-    	//display_inorder_BST(tree1);
-    	printf("\n");
- 
-    	//printf("\nBT inorder : ");
-    	//display_inorder_BT(tree2);
-    	printf("\n");
-
-    	int comparisons = 0;
-    	int flag = 0;
-    	int srch = rand()%100;
-    	printf("%d\t",LIMIT);
-    	printf("%d\t",comparisonBST(tree1,srch));
     	
-    	comparisonBT(tree2,srch,&comparisons,&flag);
-    	printf("%d\n",comparisons);
-
+    	int n = LIMIT;
+    	int comparisons = 0;
+    	int flag = 0, bt = 0 , bst = 0 , avg = 0;
+    	int TotalCompForBST = 0 ;
+    	int TotalCompForBT = 0;
+    	
+    	for(int i = 0 ; i  < n ; i++){
+    		int random_search = rand() % 100;
+    	
+    		int bst = comparisonBST(tree1,random_search);
+    		int bt = comparisonBT(tree2,random_search,&comparisons,&flag);
+    		
+    		printf("%d\t", random_search);
+    		TotalCompForBST += bst;
+    		TotalCompForBT += bt;
+    							
+    	}
+    	
+    	int AvgForBST =  TotalCompForBST / LIMIT;   
+    	int AVgForBT = TotalCompForBT /LIMIT;
+	
+	printf("\n");
+	printf("Limits are :  %d\n", LIMIT);
+	printf("Average searches for BST : %d\n", AvgForBST);
+	printf("Average searches for BT : %d\n", AVgForBT);
+	
     return 0;
 }
